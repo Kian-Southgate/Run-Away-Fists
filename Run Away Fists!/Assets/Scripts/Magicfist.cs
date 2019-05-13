@@ -20,13 +20,17 @@ public class Magicfist : MonoBehaviour
 	public Swing swing;
 	float victimPreviousGravity = 0;
 	float victimPreviousAngularDrag = 0;
-	float previousGravity = 0;
+	
 	GameObject victim;
 	Collider2D victimCollider;
 	Vector3 targetPos;
 	public float tolerance = 0.5f;
 	public bool offbody = false;
-	public bool pulling = false;
+	//public bool pulling = false;
+	FIST_DIRECTION fistDirection = FIST_DIRECTION.NONE;
+
+	enum FIST_DIRECTION {PULLING,PUSHING,NONE};
+	//public bool launchedfist = false;
 	Vector3 StartPosition()
 	{
 		return new Vector3(body.transform.localPosition.x + offset.x, body.transform.localPosition.y + offset.y, body.transform.localPosition.z + offset.z);
@@ -44,7 +48,6 @@ public class Magicfist : MonoBehaviour
 	void Start()
 	{
 		offset = new Vector3(transform.localPosition.x - body.transform.localPosition.x, transform.localPosition.y - body.transform.localPosition.y, transform.localPosition.z - body.transform.localPosition.z);
-		previousGravity = platformerMotor2D.gravityMultiplier;
 		platformerMotor2D.onJump += detatchFromStaticVictimAndPull;
 	}
 	
@@ -54,9 +57,19 @@ public class Magicfist : MonoBehaviour
 	{
 		handleInput();
 
-		if (pulling)
+		if (fistDirection == FIST_DIRECTION.PULLING)
 		{
 			pullFist(pullSpeed);
+		}
+
+		if (fistDirection == FIST_DIRECTION.PUSHING)
+		{
+			transform.position = Vector3.MoveTowards(transform.position, targetPos, launchSpeed);
+
+			if (getMagnitude() > maxDistance | Vector3.Distance(transform.position, targetPos) == 0)
+			{
+				finishLaunchFist();
+			}
 		}
 
 		if (nearStart() && fistAttatched() == false)
@@ -88,7 +101,7 @@ public class Magicfist : MonoBehaviour
 		if (offbody == false)
 		{
 			transform.localPosition = StartPosition();
-			pulling = false;
+			fistDirection = FIST_DIRECTION.NONE;
 		}
 	}
 
@@ -96,43 +109,29 @@ public class Magicfist : MonoBehaviour
 	{
 		if (Input.GetAxis("Launch Fist") > 0)
 		{
-			if (fistAttatched())
-			{
-				if (nearStart())
+			if (nearStart() && fistDirection == FIST_DIRECTION.NONE)
 				{
 					targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 					targetPos.z = transform.position.z;
-					transform.position = Vector3.MoveTowards(transform.position, targetPos, launchSpeed);
 					offbody = true;
+					fistDirection = FIST_DIRECTION.PUSHING;
 				}
-				else
-				{
-					transform.position = Vector3.MoveTowards(transform.position, targetPos, launchSpeed);
-				}
-			}
-		}
-		if (Input.GetAxis("Launch Fist") == 0 && nearStart() == false && victim == null)
-		{
-			finishLaunchFist();
 		}
 		
-		if (Input.GetAxis("Pull Fist") > 0)
+		if (Input.GetAxis("Pull Fist") > 0 && fistDirection == FIST_DIRECTION.NONE)
 		{
 			if (victimIsStatic())
 			{
 				detatchVictim();
 			}
-			pulling = true;
+			fistDirection = FIST_DIRECTION.PULLING;
 		}
 
 		if (Input.GetAxis("Grappel") > 0 && victim != null)
 		{
+			float previousGravity = platformerMotor2D.gravityMultiplier;
 			platformerMotor2D.gravityMultiplier = 0;
 			grappelToFist(grappelSpeed * 2);
-		}
-
-		if (Input.GetAxis("Grappel") == 0 | victim == null)
-		{
 			platformerMotor2D.gravityMultiplier = previousGravity;
 		}
 	}
@@ -142,7 +141,7 @@ public class Magicfist : MonoBehaviour
 		if (victimIsStatic())
 		{
 			detatchVictim();
-			pulling = true;
+			fistDirection = FIST_DIRECTION.PULLING;
 		}
 	}
 	bool fistAttatched()
@@ -154,6 +153,7 @@ public class Magicfist : MonoBehaviour
 	{
 		rigidbody2D.bodyType = RigidbodyType2D.Dynamic;
 		collider.isTrigger = false;
+		fistDirection =FIST_DIRECTION.NONE;
 	}
 	float getMagnitude() 
 	{
@@ -203,18 +203,21 @@ public class Magicfist : MonoBehaviour
 		collider.isTrigger = true;
 		offbody = false;
 		detatchVictim();
-		pulling = false;
+		fistDirection = FIST_DIRECTION.NONE;
 	}
 	
 	void constrainDistanceToBody()
 	{
+		
 		if (getMagnitude() > maxDistanceForSnap)
 		{
 			detatchVictim();
 		}
-        
+		
+
 		if (getMagnitude() > maxDistance)
 		{
+			
             float dist = Vector3.Distance(transform.localPosition, StartPosition());
 			
             if (victimIsStatic())
@@ -232,6 +235,8 @@ public class Magicfist : MonoBehaviour
 		this.victimCollider = col;
 		this.victim = col.gameObject;
 		this.transform.position = victim.transform.position;
+		fistDirection = FIST_DIRECTION.NONE;
+
 		collider.isTrigger = true;
 		rigidbody2D.bodyType = RigidbodyType2D.Static;
 		rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
