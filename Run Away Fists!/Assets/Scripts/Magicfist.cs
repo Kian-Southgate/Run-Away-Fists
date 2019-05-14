@@ -13,7 +13,9 @@ public class Magicfist : MonoBehaviour
 	public float grappelSpeed = 0.5f;
 	public LayerMask staticEnvLayerMask;
 	public Collider2D bodyCollider;
+	Rigidbody2D bodyRigidBody;
 	public GameObject body;
+	public Rigidbody2D anchor;
 	public PlatformerMotor2D platformerMotor2D;
 	public Swing swing;
 	float victimPreviousGravity = 0;
@@ -21,6 +23,7 @@ public class Magicfist : MonoBehaviour
 	GameObject victim;
 	Collider2D victimCollider;
 	Vector3 targetPos;
+	DistanceJoint2D constrainer;
 	public float tolerance = 0.5f;
 	FIST_DIRECTION fistDirection = FIST_DIRECTION.NONE;
 	enum VICTIM_HELD {STATIC_VICTIM, DYNAMIC_VICTIM, NONE}
@@ -82,6 +85,7 @@ public class Magicfist : MonoBehaviour
 				detatchVictim();
 			}
 			fistDirection = FIST_DIRECTION.PULLING;
+			constrainer.maxDistanceOnly = false;
 		}
 
 		else if (Input.GetAxis("Grappel") > 0 && victimHeld() != VICTIM_HELD.NONE)
@@ -151,6 +155,12 @@ public class Magicfist : MonoBehaviour
 			case VICTIM_HELD.DYNAMIC_VICTIM:
 				{
 					this.transform.position = victim.transform.position;
+					if (getMagnitude() > maxDistanceForSnap)
+					{
+						detatchVictim();
+						fistDirection = FIST_DIRECTION.PULLING;
+						constrainer.maxDistanceOnly = false;
+					}
 					break;
 				}
 			case VICTIM_HELD.NONE:
@@ -165,6 +175,7 @@ public class Magicfist : MonoBehaviour
 		{
 			detatchVictim();
 			fistDirection = FIST_DIRECTION.PULLING;
+			swing.exitSwing(platformerMotor2D);
 		}
 	}
 	float getMagnitude() 
@@ -177,8 +188,7 @@ public class Magicfist : MonoBehaviour
 		{
 			case VICTIM_HELD.DYNAMIC_VICTIM:
 			{
-				Vector2 change = Vector2.MoveTowards(victim.transform.position, body.transform.position, speed);
-				victimRigidBody().MovePosition(change);
+				constrainer.distance -= speed;
 				break;
 			}
 			case VICTIM_HELD.STATIC_VICTIM:
@@ -199,16 +209,7 @@ public class Magicfist : MonoBehaviour
 	}
 	void constrainDistanceToBody()
 	{
-		if (getMagnitude() > maxDistanceForSnap)
-		{
-			detatchVictim();
-		}
-
-		if (getMagnitude() > maxDistance)
-		{
-            float dist = Vector3.Distance(transform.localPosition, StartPosition());
-			pullFist(dist - maxDistance);
-		}
+		
 	}
 	void grabVictim(Collider2D col)
 	{
@@ -223,6 +224,25 @@ public class Magicfist : MonoBehaviour
 		victimPreviousGravity = victimRigidBody().gravityScale;
 		victimPreviousAngularDrag = victimRigidBody().angularDrag;
 		victim.transform.rotation = Quaternion.identity;
+
+		if (victimHeld() == VICTIM_HELD.DYNAMIC_VICTIM)
+		{
+			constrainer = col.gameObject.AddComponent<DistanceJoint2D>();
+			constrainer.connectedBody = anchor;
+		} else if (victimHeld() == VICTIM_HELD.STATIC_VICTIM)
+		{
+			bodyRigidBody = body.gameObject.AddComponent<Rigidbody2D>();
+			bodyRigidBody.bodyType = RigidbodyType2D.Dynamic;
+			bodyRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+			constrainer = body.gameObject.AddComponent<DistanceJoint2D>();
+			constrainer.connectedBody = victimRigidBody();
+		}
+		
+		constrainer.maxDistanceOnly = true;
+		constrainer.distance = maxDistance;
+		constrainer.autoConfigureDistance = false;
+		anchor.gameObject.transform.localPosition = new Vector3(0, 0, 0);
 		//victimRigidBody().gravityScale = 100;
 		//victimRigidBody().angularDrag = 10;
 	}
@@ -230,6 +250,7 @@ public class Magicfist : MonoBehaviour
 	{
 		if (victimHeld() != VICTIM_HELD.NONE)
 		{
+			Destroy(constrainer);
 			victimRigidBody().gravityScale = victimPreviousGravity;
 			victimRigidBody().angularDrag = victimPreviousAngularDrag;
 			victimRigidBody().collisionDetectionMode = CollisionDetectionMode2D.Discrete;
@@ -237,6 +258,8 @@ public class Magicfist : MonoBehaviour
 			victimRigidBody().angularVelocity = 0;
 
 			Physics2D.IgnoreCollision(victimCollider, bodyCollider, false);
+			anchor.gameObject.transform.localPosition = new Vector3(0,0,0);
+			Destroy(bodyRigidBody);
 			victim = null;
 		}
 	}
