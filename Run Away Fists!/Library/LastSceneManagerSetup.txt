@@ -1,6 +1,5 @@
 sceneSetups:
-- path: Assets/Unity-2D-Platformer-Controller/Assets/PC2D/Example/Moving Platforms/Moving
-    Platforms.unity
+- path: Assets/Scenes/TutorialLevel.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

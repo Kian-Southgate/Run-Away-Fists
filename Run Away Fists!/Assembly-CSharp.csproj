@@ -55,6 +55,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\ChainPack\Chain2D\scripts\Chain.cs" />
+     <Compile Include="Assets\ChainPack\Chain2D\scripts\ChainController.cs" />
+     <Compile Include="Assets\ChainPack\Chain2D\scripts\Link.cs" />
+     <Compile Include="Assets\ChainPack\scriptsOther\CutMouse.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Jump.cs" />
      <Compile Include="Assets\Scripts\Magicfist.cs" />
@@ -82,7 +86,9 @@
      <Compile Include="Assets\Unity-2D-Platformer-Controller\Assets\PC2D\Scripts\PlatformerMotor2D.cs" />
      <Compile Include="Assets\Unity-2D-Platformer-Controller\Assets\PC2D\Scripts\PlayerController2D.cs" />
      <None Include="Assets\Unity-2D-Platformer-Controller\LICENSE.txt" />
+     <None Include="Assets\ChainPack\Chain2D\README.txt" />
      <None Include="Assets\Asset Store Assets\BayatGames\Free Platform Game Assets\Readme.txt" />
+     <None Include="Assets\ChainPack\README.txt" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>/Users/bkrajancic/Desktop/BoBot/Run-Away-Fists/Run Away Fists!/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>

@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\ChainPack\Chain2D\Editor\ChainEditor.cs" />
      <Compile Include="Assets\Unity-2D-Platformer-Controller\Assets\PC2D\Editor\PlatformerMotor2DEditor.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>/Users/bkrajancic/Desktop/BoBot/Run-Away-Fists/Run Away Fists!/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
