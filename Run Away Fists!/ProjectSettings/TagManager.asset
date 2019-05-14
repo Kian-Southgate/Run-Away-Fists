@@ -14,7 +14,7 @@ TagManager:
   - 
   - 
   - Environment
-  - 
+  - Platform
   - 
   - 
   - 
@@ -49,4 +49,7 @@ TagManager:
     locked: 0
   - name: Environment
     uniqueID: 414989711
+    locked: 0
+  - name: Platform
+    uniqueID: 3342630545
     locked: 0
