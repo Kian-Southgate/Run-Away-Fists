@@ -300,7 +300,6 @@
 "Assets/Scripts/Jump.cs"
 "Assets/Scripts/Magicfist.cs"
 "Assets/Scripts/ManualController.cs"
-"Assets/Scripts/OptionalParent.cs"
 "Assets/Scripts/PositionCopier.cs"
 "Assets/Swing.cs"
 "Assets/SwingParams.cs"

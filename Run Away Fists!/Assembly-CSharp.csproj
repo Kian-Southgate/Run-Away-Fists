@@ -59,7 +59,6 @@
      <Compile Include="Assets\Scripts\Jump.cs" />
      <Compile Include="Assets\Scripts\Magicfist.cs" />
      <Compile Include="Assets\Scripts\ManualController.cs" />
-     <Compile Include="Assets\Scripts\OptionalParent.cs" />
      <Compile Include="Assets\Scripts\PositionCopier.cs" />
      <Compile Include="Assets\Swing.cs" />
      <Compile Include="Assets\SwingParams.cs" />
