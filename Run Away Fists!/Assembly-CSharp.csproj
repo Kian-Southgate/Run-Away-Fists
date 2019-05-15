@@ -62,7 +62,6 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Jump.cs" />
      <Compile Include="Assets\Scripts\Magicfist.cs" />
-     <Compile Include="Assets\Scripts\MagicFist_Hinge.cs" />
      <Compile Include="Assets\Scripts\ManualController.cs" />
      <Compile Include="Assets\Scripts\PositionCopier.cs" />
      <Compile Include="Assets\Swing.cs" />

@@ -303,7 +303,6 @@
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Jump.cs"
 "Assets/Scripts/Magicfist.cs"
-"Assets/Scripts/MagicFist_Hinge.cs"
 "Assets/Scripts/ManualController.cs"
 "Assets/Scripts/PositionCopier.cs"
 "Assets/Swing.cs"

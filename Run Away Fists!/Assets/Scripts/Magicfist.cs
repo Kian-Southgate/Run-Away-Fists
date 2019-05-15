@@ -13,8 +13,8 @@ public class Magicfist : MonoBehaviour
 	public float grappelSpeed = 0.5f;
 	public LayerMask staticEnvLayerMask;
 	public Collider2D bodyCollider;
-	Rigidbody2D bodyRigidBody;
 	public GameObject body;
+	public Rigidbody2D bodyRigidBody;
 	public Rigidbody2D anchor;
 	public PlatformerMotor2D platformerMotor2D;
 	public Swing swing;
@@ -57,6 +57,13 @@ public class Magicfist : MonoBehaviour
 	{
 		offset = new Vector3(transform.localPosition.x - body.transform.localPosition.x, transform.localPosition.y - body.transform.localPosition.y, transform.localPosition.z - body.transform.localPosition.z);
 		platformerMotor2D.onAirJump += detatchFromStaticVictimAndPull;
+		
+		bodyRigidBody = body.gameObject.AddComponent<Rigidbody2D>();
+		bodyRigidBody.gravityScale = 0;
+		bodyRigidBody.bodyType = RigidbodyType2D.Dynamic;
+		bodyRigidBody.freezeRotation = true;
+		bodyRigidBody.mass = 0f;
+		bodyRigidBody.drag = 999;
 	
 	}
 	void FixedUpdate()
@@ -64,7 +71,6 @@ public class Magicfist : MonoBehaviour
 		handleInput();
 		updateFist();
 		updateVictim();
-		constrainDistanceToBody();
 	}
 
 	void handleInput()
@@ -207,10 +213,6 @@ public class Magicfist : MonoBehaviour
 	{
 		body.transform.localPosition = Vector3.MoveTowards(body.transform.localPosition, transform.localPosition, speed);
 	}
-	void constrainDistanceToBody()
-	{
-		
-	}
 	void grabVictim(Collider2D col)
 	{
 		this.victimCollider = col;
@@ -231,7 +233,7 @@ public class Magicfist : MonoBehaviour
 			constrainer.connectedBody = anchor;
 		} else if (victimHeld() == VICTIM_HELD.STATIC_VICTIM)
 		{
-			bodyRigidBody = body.gameObject.AddComponent<Rigidbody2D>();
+			
 			bodyRigidBody.bodyType = RigidbodyType2D.Dynamic;
 			bodyRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
@@ -259,7 +261,7 @@ public class Magicfist : MonoBehaviour
 
 			Physics2D.IgnoreCollision(victimCollider, bodyCollider, false);
 			anchor.gameObject.transform.localPosition = new Vector3(0,0,0);
-			Destroy(bodyRigidBody);
+			//Destroy(bodyRigidBody);
 			victim = null;
 		}
 	}
