@@ -710,6 +710,15 @@ public class PlatformerMotor2D : MonoBehaviour
         _jumping.numAirJumps = 0;
     }
 
+	/// <summary>
+	/// Sets the state for air jumps by setting the counter to 0.
+    /// Addition by Ben Krajancic
+	/// </summary>
+	public void SetAirJump(int counter)
+	{
+		_jumping.numAirJumps = counter;
+	}
+
     /// <summary>
     /// Reset the cooldown for dash.
     /// </summary>

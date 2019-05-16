@@ -10,6 +10,7 @@ public class SwingParams : MonoBehaviour
     public float gravityMultiplier = 0;
     public float fastFallSpeed = 0;
     public float fastFallGravityMultiplier = 0;
+    public int numAirJumps = 2;
 
     public void setSwingParams(PlatformerMotor2D platformerMotor2D)
     {
@@ -19,6 +20,7 @@ public class SwingParams : MonoBehaviour
         gravityMultiplier = platformerMotor2D.gravityMultiplier;
         fastFallSpeed = platformerMotor2D.fastFallSpeed;
         fastFallGravityMultiplier = platformerMotor2D.fastFallGravityMultiplier;
+		numAirJumps = platformerMotor2D.numOfAirJumps;
     }
     public void setOther(PlatformerMotor2D platformerMotor2D)
     {
@@ -28,5 +30,6 @@ public class SwingParams : MonoBehaviour
         platformerMotor2D.gravityMultiplier = gravityMultiplier;
         platformerMotor2D.fastFallSpeed = fastFallSpeed;
         platformerMotor2D.fastFallGravityMultiplier = fastFallGravityMultiplier;
+		platformerMotor2D.numOfAirJumps = numAirJumps;
     }
 }

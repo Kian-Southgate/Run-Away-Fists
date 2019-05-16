@@ -24,11 +24,12 @@ public class Magicfist : MonoBehaviour
 	Collider2D victimCollider;
 	Vector3 targetPos;
 	DistanceJoint2D constrainer;
+	
 	public float tolerance = 0.5f;
 	FIST_DIRECTION fistDirection = FIST_DIRECTION.NONE;
 	enum VICTIM_HELD {STATIC_VICTIM, DYNAMIC_VICTIM, NONE}
 
-	enum FIST_DIRECTION {PULLING,LAUNCHING,NONE};
+	enum FIST_DIRECTION {PULLING,LAUNCHING,GRAPPELING, NONE};
 	Vector3 StartPosition()
 	{
 		return new Vector3(body.transform.localPosition.x + offset.x, body.transform.localPosition.y + offset.y, body.transform.localPosition.z + offset.z);
@@ -86,20 +87,30 @@ public class Magicfist : MonoBehaviour
 		}
 		else if (Input.GetAxis("Pull Fist") > 0 && fistDirection == FIST_DIRECTION.NONE)
 		{
-			if (victimHeld() == VICTIM_HELD.STATIC_VICTIM)
-			{
-				detatchVictim();
-			}
 			fistDirection = FIST_DIRECTION.PULLING;
-			constrainer.maxDistanceOnly = false;
+			switch(victimHeld())
+			{
+				case VICTIM_HELD.STATIC_VICTIM:
+				{
+					detatchVictim();
+					constrainer.maxDistanceOnly = false;
+					break;
+				}
+				case VICTIM_HELD.DYNAMIC_VICTIM:
+				{
+					constrainer.maxDistanceOnly = false;
+					break;
+				}
+				case VICTIM_HELD.NONE:
+				{
+					break;
+				}
+			}
 		}
 
 		else if (Input.GetAxis("Grappel") > 0 && victimHeld() != VICTIM_HELD.NONE)
 		{
-			float previousGravity = platformerMotor2D.gravityMultiplier;
-			platformerMotor2D.gravityMultiplier = 0;
-			grappelToFist(grappelSpeed);
-			platformerMotor2D.gravityMultiplier = previousGravity;
+			fistDirection = FIST_DIRECTION.GRAPPELING;
 		}
 	}
 
@@ -127,6 +138,22 @@ public class Magicfist : MonoBehaviour
 					}
 					break;
 				}
+			case FIST_DIRECTION.GRAPPELING: 
+			{
+				if (fistNearBody())
+				{
+					detatchVictim();
+					fistDirection = FIST_DIRECTION.NONE;
+				} else if (victimHeld() != VICTIM_HELD.NONE)
+				{
+					float previousGravity = platformerMotor2D.gravityMultiplier;
+					platformerMotor2D.gravityMultiplier = 0;
+					grappelToFist(grappelSpeed);
+					platformerMotor2D.gravityMultiplier = previousGravity;
+				}
+				
+				break;
+			}
 			case FIST_DIRECTION.NONE:
 				{
 					if (fistNearBody())
@@ -233,20 +260,18 @@ public class Magicfist : MonoBehaviour
 			constrainer.connectedBody = anchor;
 		} else if (victimHeld() == VICTIM_HELD.STATIC_VICTIM)
 		{
-			
 			bodyRigidBody.bodyType = RigidbodyType2D.Dynamic;
 			bodyRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
 			constrainer = body.gameObject.AddComponent<DistanceJoint2D>();
 			constrainer.connectedBody = victimRigidBody();
+			
 		}
 		
 		constrainer.maxDistanceOnly = true;
 		constrainer.distance = maxDistance;
 		constrainer.autoConfigureDistance = false;
 		anchor.gameObject.transform.localPosition = new Vector3(0, 0, 0);
-		//victimRigidBody().gravityScale = 100;
-		//victimRigidBody().angularDrag = 10;
 	}
 	void detatchVictim()
 	{
@@ -261,8 +286,9 @@ public class Magicfist : MonoBehaviour
 
 			Physics2D.IgnoreCollision(victimCollider, bodyCollider, false);
 			anchor.gameObject.transform.localPosition = new Vector3(0,0,0);
-			//Destroy(bodyRigidBody);
 			victim = null;
+
+			swing.exitSwing(platformerMotor2D);
 		}
 	}
 	bool fistNearBody()

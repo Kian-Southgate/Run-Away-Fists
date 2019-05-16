@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,8 +16,9 @@ public class Swing : MonoBehaviour
             inSwing = true;
             previous.setSwingParams(platformerMotor2D);
 			inAir.setOther(platformerMotor2D);
+            
+			platformerMotor2D.SetAirJump(Math.Max(inAir.numAirJumps - 1, 0));
         }
-        
     }
     public void exitSwing(PlatformerMotor2D platformerMotor2D)
     {
