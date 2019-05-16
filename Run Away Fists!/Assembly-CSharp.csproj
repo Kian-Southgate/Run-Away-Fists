@@ -64,6 +64,7 @@
      <Compile Include="Assets\Scripts\Magicfist.cs" />
      <Compile Include="Assets\Scripts\ManualController.cs" />
      <Compile Include="Assets\Scripts\PositionCopier.cs" />
+     <Compile Include="Assets\Scripts\SimpleUpDownRigid.cs" />
      <Compile Include="Assets\Swing.cs" />
      <Compile Include="Assets\SwingParams.cs" />
      <Compile Include="Assets\Unity-2D-Platformer-Controller\Assets\PC2D\Example\CameraFollow.cs" />

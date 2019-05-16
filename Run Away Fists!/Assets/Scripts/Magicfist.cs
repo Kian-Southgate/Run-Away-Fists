@@ -175,6 +175,7 @@ public class Magicfist : MonoBehaviour
 		{
 			case VICTIM_HELD.STATIC_VICTIM:
 				{
+					this.transform.position = victim.transform.position;
 					if (platformerMotor2D.IsInAir())
 					{
 						swing.enterSwing(platformerMotor2D);
@@ -324,8 +325,15 @@ public class Magicfist : MonoBehaviour
 			return false;
 		}
 
+
 		Rigidbody2D otherBody = other.gameObject.GetComponent<Rigidbody2D>();
 		if (otherBody == null)
+		{
+			return false;
+		}
+
+		PlatformerMotor2D otherMotor = other.gameObject.GetComponent<PlatformerMotor2D>();
+		if (otherMotor != null)
 		{
 			return false;
 		}

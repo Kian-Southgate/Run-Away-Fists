@@ -1968,7 +1968,9 @@ public class PlatformerMotor2D : MonoBehaviour
         MovingPlatformMotor2D previous = _movingPlatformState.platform;
         _movingPlatformState.platform = null;
         _movingPlatformState.stuckToWall = CollidedSurface.None;
-
+        
+        ResetAirJump(); //ADDITION BY BEN KRAJANCIC TO FIX INACCURACY
+        
         //Debug.Log(collidingAgainst);
 
         if (HasFlag(CollidedSurface.Ground))
